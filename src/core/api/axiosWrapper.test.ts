@@ -11,7 +11,7 @@ describe('axiosWrapper tests', () => {
     it('a get should return an observable', (done) => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         axiosWrapper.get("https://facebook.com").subscribe(result => {
-            expect(result).toEqual({ data: "asdf" });
+            expect(result).toEqual("asdf");
             done();
         });
     });
@@ -19,7 +19,7 @@ describe('axiosWrapper tests', () => {
     it('a get should have a specific config', (done) => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         axiosWrapper.get("https://facebook.com").subscribe(result => {
-            expect(result).toEqual({ data: "asdf" });
+            expect(result).toEqual("asdf");
             expect(axiosMock.mock.calls[0][0]).toEqual({ method: 'get', url: 'https://facebook.com', headers: undefined })
             done();
         });
@@ -29,7 +29,7 @@ describe('axiosWrapper tests', () => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         const record: Record<string, string> = { "x-request": "value" };
         axiosWrapper.get("https://facebook.com", record).subscribe(result => {
-            expect(result).toEqual({ data: "asdf" });
+            expect(result).toEqual("asdf");
             expect(axiosMock.mock.calls[0][0]).toEqual({ method: 'get', url: 'https://facebook.com', headers: record })
             done();
         });
@@ -51,7 +51,7 @@ describe('axiosWrapper tests', () => {
     it('a post should return an observable', (done) => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         axiosWrapper.post("https://facebook.com", { data: "qwer" }).subscribe(result => {
-            expect(result).toEqual({ data: "asdf" });
+            expect(result).toEqual("asdf");
             done();
         });
     });
@@ -59,7 +59,7 @@ describe('axiosWrapper tests', () => {
     it('a post should have a specific config', (done) => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         axiosWrapper.post("https://facebook.com", { data: "qwer" }).subscribe(result => {
-            expect(result).toEqual({ data: "asdf" });
+            expect(result).toEqual("asdf");
             expect(axiosMock.mock.calls[0][0]).toEqual({ method: 'post', url: 'https://facebook.com', headers: undefined, data: { data: "qwer" } })
             done();
         });
@@ -69,7 +69,7 @@ describe('axiosWrapper tests', () => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         const record: Record<string, string> = { "x-request": "value" };
         axiosWrapper.post("https://facebook.com", { data: "a" }, record).subscribe(result => {
-            expect(result).toEqual({ data: "asdf" });
+            expect(result).toEqual("asdf");
             expect(axiosMock.mock.calls[0][0]).toEqual({ method: 'post', url: 'https://facebook.com', headers: record, data: { data: 'a' } })
             done();
         });

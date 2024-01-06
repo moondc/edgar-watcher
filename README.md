@@ -2,6 +2,8 @@
 This application takes an array of tickers and sets up a "watcher" that will query the edgar database for new 8k's.
 When found it will send a notification via a discord webhook
 
+// endpoints - https://www.sec.gov/files/company_tickers.json
+
 Create a copy of src/environment.example.ts and provide your own values.
 
 ```

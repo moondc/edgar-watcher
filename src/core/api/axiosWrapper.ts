@@ -1,22 +1,26 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { from, throwError, Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-function makeRequest(config: AxiosRequestConfig): Observable<any> {
-    return from(axios(config)).pipe(
-        catchError(error => {
-            return throwError(() => error);
-        })
-    );
+function makeRequest<Type>(config: AxiosRequestConfig): Observable<Type> {
+    const obs = new Observable<Type>(handle => {
+        axios(config).then(res => {
+            handle.next(res.data);
+        }).catch(err => {
+            handle.error(err);
+        }).finally(() => {
+            handle.complete()
+        });
+    })
+    return obs;
 }
 
 export default {
-    get: (url: string, headers?: Record<string, string>) => makeRequest({
+    get: <Type>(url: string, headers?: Record<string, string>): Observable<Type> => makeRequest<Type>({
         method: 'get',
         url,
         headers,
     }),
-    post: (url: string, data: any, headers?: Record<string, string>) => makeRequest({
+    post: <Type>(url: string, data: any, headers?: Record<string, string>): Observable<Type> => makeRequest<Type>({
         method: 'post',
         url,
         data,
