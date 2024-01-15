@@ -1,25 +1,32 @@
-import sendMessage from "./feature/webhook/discordIntegration";
 import environment from "./environment";
 import { interval } from "rxjs";
 import secApi from "./feature/secApi/secApi";
-import apiHelper from "./feature/secApi/apiHelper";
+import datastoreGenerator, { Store } from "./feature/datastore/datastore";
+import list from "./ticker-list";
+import discordSecMesssager from "./feature/webhook/discordSecMessager";
 
-// read configuration
 const app = () => {
-    sendMessage(environment.discordWebhook, ["everyone"], "Test", ["https://nootnoot.net"]);
-    interval(environment.intervalInMilliseconds).subscribe(() => {
+    const datastores: Store[] = [];
+    for (const ticker of list) {
+        const store = datastoreGenerator(ticker);
+        datastores.push(store);
+    }
 
-        // fetch new data
-        // store latest data
-        // compare data
-        // send notification
+    interval(environment.intervalInMilliseconds).subscribe(() => {
+        for (let store of datastores) {
+            secApi.findCIK(store.getName()).subscribe(cik => {
+                secApi.getSubmissions(cik).subscribe(submission => {
+                    if (!store.compare(submission)) {
+                        discordSecMesssager.postForm(submission, cik);
+                    }
+                    store.store(submission);
+                })
+            });
+        }
     });
 };
 
-//app();
-secApi.findCIK("AMC").subscribe(res => {
-    secApi.getSubmissions(res).subscribe(submission => {
-        const filingsArr = apiHelper.fixFilingObjectAndSort(submission.filings.recent);
-    })
-});
+app();
+
+
 export default app;

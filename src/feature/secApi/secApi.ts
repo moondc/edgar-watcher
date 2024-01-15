@@ -39,7 +39,6 @@ const getSubmissions = (cik: number): Observable<Submission> => {
 }
 
 const leftFillZeroes = (input: string, length: number): string => {
-    if (input.length >= length) return input;
     const zeroesToFill = length - input.length;
     const zeroPadding = "0".repeat(zeroesToFill);
     return zeroPadding + input;

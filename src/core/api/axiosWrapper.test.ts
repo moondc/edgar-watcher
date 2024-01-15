@@ -4,10 +4,12 @@ import axiosWrapper from './axiosWrapper';
 jest.mock('axios');
 const axiosMock = (axios as jest.MockedFunction<typeof axios>)
 
+jest.mock("../../environment", () => { return { maxCallsPerSecond: 3 } });
+jest.useFakeTimers();
+
 describe('axiosWrapper tests', () => {
-    beforeEach(() => {
-        jest.resetAllMocks();
-    })
+    beforeEach(() => { jest.resetAllMocks(); })
+    afterEach(() => { jest.runAllTimers(); })
     it('a get should return an observable', (done) => {
         axiosMock.mockResolvedValue({ data: "asdf" });
         axiosWrapper.get("https://facebook.com").subscribe(result => {
@@ -88,3 +90,63 @@ describe('axiosWrapper tests', () => {
         axiosWrapper.post("https://facebook.com", {}).subscribe(obs);
     });
 });
+
+
+describe('axiosWrapper concurrency tests', () => {
+    beforeEach(() => { jest.resetAllMocks(); })
+    afterEach(() => { jest.runAllTimers(); })
+
+    // a simple function that helps determine when to call "done()"
+    const areConcurrentCallsDoneGenerator = (number: Number) => {
+        let current = 0;
+        const num: Number = number;
+        return (): boolean => {
+            current++;
+            return current === num
+        }
+    }
+
+    it('should test my testing function', () => {
+        const concurrentChecker = areConcurrentCallsDoneGenerator(3);
+        for (let i = 0; i < 3; i++) {
+            if (i < 2) {
+                expect(concurrentChecker()).toBe(false);
+            }
+            else {
+                expect(concurrentChecker()).toBe(true);
+            }
+        }
+    });
+
+    it("should make calls immediately if below the max conrrent allowed", (done) => {
+        axiosMock.mockResolvedValue({ data: "asdf" });
+        const concurrentChecker = areConcurrentCallsDoneGenerator(3);
+        for (let i = 0; i < 3; i++) {
+            axiosWrapper.get("https://facebook.com").subscribe(result => {
+                expect(result).toEqual("asdf");
+                concurrentChecker() && done();
+            });
+        }
+    })
+
+    it("should make calls wait to make calls after htting the max allowed per second", (done) => {
+        axiosMock.mockResolvedValue({ data: "asdf" });
+        const concurrentChecker = areConcurrentCallsDoneGenerator(10);
+        for (let i = 0; i < 10; i++) {
+            axiosWrapper.get("https://facebook.com").subscribe(result => {
+                expect(result).toEqual("asdf");
+                concurrentChecker() && done();
+            });
+        }
+        expect(axiosMock.mock.calls.length).toBe(3);
+        jest.runOnlyPendingTimers();
+        expect(axiosMock.mock.calls.length).toBe(6);
+        jest.runOnlyPendingTimers();
+        expect(axiosMock.mock.calls.length).toBe(9);
+        jest.runOnlyPendingTimers();
+        expect(axiosMock.mock.calls.length).toBe(10);
+    });
+
+
+});
+
