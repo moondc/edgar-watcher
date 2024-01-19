@@ -5,6 +5,8 @@ import datastoreGenerator, { Store } from "./feature/datastore/datastore";
 import list from "./ticker-list";
 import discordSecMesssager from "./feature/webhook/discordSecMessager";
 
+console.log("Script is running");
+
 const app = () => {
     const datastores: Store[] = [];
     for (const ticker of list) {
