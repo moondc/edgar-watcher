@@ -4,9 +4,11 @@ import secApi from "./feature/secApi/secApi";
 import datastoreGenerator, { Store } from "./feature/datastore/datastore";
 import list from "./ticker-list";
 import discordSecMesssager from "./feature/webhook/discordSecMessager";
+import sendMessage from './feature/webhook/discordIntegration';
 
 console.log("Script is running");
 
+sendMessage(environment.discordWebhook,["everyone"],"This is a test",["s"]).subscribe()
 const app = () => {
     const datastores: Store[] = [];
     for (const ticker of list) {
