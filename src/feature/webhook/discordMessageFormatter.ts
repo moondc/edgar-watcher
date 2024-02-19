@@ -5,9 +5,10 @@
  * @param urlList - any url attachments
  */
 const generateMessage = (userlist: string[], message: string, urlList: string[]): string => {
-    const userString = formatUsers(userlist);
-    const messageString = formatMessage(message);
-    const urlString = formatUrls(urlList);
+    let userString, messageString, urlString;
+    if (userlist) userString = formatUsers(userlist);
+    if (message) messageString = formatMessage(message);
+    if (urlList) urlString = formatUrls(urlList);
     return userString + "\n" + messageString + "\n" + urlString;
 }
 

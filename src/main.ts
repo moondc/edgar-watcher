@@ -5,11 +5,12 @@ import datastoreGenerator, { Store } from "./feature/datastore/datastore";
 import list from "./ticker-list";
 import discordSecMesssager from "./feature/webhook/discordSecMessager";
 import sendMessage from './feature/webhook/discordIntegration';
+import app from "./express";
 
-console.log("Script is running");
+app; //Necessary
 
-sendMessage(environment.discordWebhook,["everyone"],"This is a test",["s"]).subscribe()
-const app = () => {
+sendMessage(environment.discordWebhook,[],"edgar-watcher starting up",[]).subscribe()
+const main = () => {
     const datastores: Store[] = [];
     for (const ticker of list) {
         const store = datastoreGenerator(ticker);
@@ -30,7 +31,7 @@ const app = () => {
     });
 };
 
-app();
+main();
 
 
-export default app;
+export default main;
