@@ -2,10 +2,33 @@
 This application takes an array of tickers and sets up a "watcher" that will query the edgar database for new 8k's.
 When found it will send a notification via a discord webhook
 
+### Run Locally
+Create a copy of src/environment.example.ts and provide your own values.
+Then run `npm run start`
+
+### Deployment
+For first time deploys you need to generate an ssh key
+Run these commands
+```
+ssh-keygen -t rsa -b 2048
+ssh-copy-id user@remote_server
+<enter password>
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+```
+
+You also need to add some environment variables
+`PI_USER="<user_name>"`
+`PI_IP="<ip_address_to_ssh_to>"`
+
+Afterwards your deploy is as easy as `./deploy.sh`
+
+### Additional Notes
+
 // endpoints - https://www.sec.gov/files/company_tickers.json
 
-Create a copy of src/environment.example.ts and provide your own values.
 
+Discord webhook format
 ```
 {
     "username": "Webhook",
