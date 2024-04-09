@@ -30,3 +30,6 @@ docker save $DOCKER_TAG | bzip2 | ssh -l $PI_USER $PI_IP docker load
 
 echo "Starting Container"
 ssh "$PI_USER@$PI_IP" "docker run -d --network host --restart unless-stopped --name $DOCKER_TAG \"$DOCKER_TAG\""
+
+echo "Removing dangling images"
+ssh "docker image rm $(docker images -f \"dangling=true\" -q)"

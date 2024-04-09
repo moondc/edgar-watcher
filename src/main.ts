@@ -9,7 +9,7 @@ import app from "./express";
 
 app; //Necessary
 
-sendMessage(environment.discordWebhook,[],"edgar-watcher starting up",[]).subscribe()
+sendMessage(environment.healthCheckWebhook,[],"edgar-watcher starting up",[]).subscribe()
 const main = () => {
     const datastores: Store[] = [];
     for (const ticker of list) {
