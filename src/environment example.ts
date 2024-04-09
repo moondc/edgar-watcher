@@ -1,3 +1,4 @@
+const healthCheckWebhook = "https://discord.com/your/server/information";
 const discordWebhook = "https://discord.com/your/server/information";
 const intervalInMilliseconds = 1000 * 60 * 5;
 const maxCallsPerSecond = 10;
