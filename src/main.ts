@@ -22,12 +22,15 @@ const main = () => {
             secApi.findCIK(store.getName()).subscribe(cik => {
                 secApi.getSubmissions(cik).subscribe(submission => {
                     if (!store.compare(submission)) {
+
                         discordSecMesssager.postForm(submission, cik);
                     }
                     store.store(submission);
                 })
             });
         }
+    },error => {
+        sendMessage(environment.healthCheckWebhook,[],error,[]).subscribe();
     });
 };
 
