@@ -22,9 +22,6 @@ ssh "$PI_USER@$PI_IP" "docker stop $DOCKER_TAG " || true
 echo "Removing old container"
 ssh "$PI_USER@$PI_IP" "docker container rm $DOCKER_TAG " || true
 
-# echo "Removing old image"
-# ssh "$PI_USER@$PI_IP" "docker image rm $DOCKER_TAG " || true
-
 echo "Pushing new image"
 docker save $DOCKER_TAG | bzip2 | ssh -l $PI_USER $PI_IP docker load
 
