@@ -19,7 +19,7 @@ const compareSubmission = (submission: Submission, store: Store, cik: number) =>
 };
 
 const handleError = (error: any) => {
-    sendMessage(environment.healthCheckWebhook, [], error, []).subscribe();
+    sendMessage(environment.healthCheckWebhook, [], error, []).subscribe({error: (err:any) => { console.log(error)}});
 };
 
 const fetchSubmissions = (cik: number, store: Store) => {
