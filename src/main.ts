@@ -6,31 +6,42 @@ import list from "./ticker-list";
 import discordSecMesssager from "./feature/webhook/discordSecMessager";
 import sendMessage from './feature/webhook/discordIntegration';
 import app from "./express";
+import { Submission } from "./feature/secApi/model";
 
 app; //Necessary
 
-sendMessage(environment.healthCheckWebhook,[],"edgar-watcher starting up",[]).subscribe()
-const main = () => {
-    const datastores: Store[] = [];
-    for (const ticker of list) {
-        const store = datastoreGenerator(ticker);
-        datastores.push(store);
+sendMessage(environment.healthCheckWebhook, [], "edgar-watcher starting up", []).subscribe()
+const compareSubmission = (submission: Submission, store: Store, cik: number) => {
+    if (!store.compare(submission)) {
+        discordSecMesssager.postForm(submission, cik);
     }
+    store.store(submission);
+};
 
-    interval(environment.intervalInMilliseconds).subscribe(() => {
-        for (let store of datastores) {
-            secApi.findCIK(store.getName()).subscribe(cik => {
-                secApi.getSubmissions(cik).subscribe(submission => {
-                    if (!store.compare(submission)) {
+const handleError = (error: any) => {
+    sendMessage(environment.healthCheckWebhook, [], error, []).subscribe();
+};
 
-                        discordSecMesssager.postForm(submission, cik);
-                    }
-                    store.store(submission);
-                })
-            });
-        }
-    },error => {
-        sendMessage(environment.healthCheckWebhook,[],error,[]).subscribe();
+const fetchSubmissions = (cik: number, store: Store) => {
+    const observer = {
+        next: (submission: Submission) => compareSubmission(submission, store, cik),
+        error: handleError
+    };
+    secApi.getSubmissions(cik).subscribe(observer);
+};
+
+const checkUpdates = (store: Store) => {
+    secApi.findCIK(store.getName()).subscribe({
+        next: cik => fetchSubmissions(cik, store),
+        error: handleError
+    });
+};
+
+const main = () => {
+    const tickerStores = list.map(ticker => datastoreGenerator(ticker));
+    interval(environment.intervalInMilliseconds).subscribe({
+        next: () => tickerStores.forEach(checkUpdates),
+        error: handleError
     });
 };
 

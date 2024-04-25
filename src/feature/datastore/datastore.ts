@@ -1,3 +1,4 @@
+// Takes a name, you store a value and then compare a new value to see if they're equal
 const datastoreGenerator = (ticker: string): Store => function () {
     let storedVal: any = null;
     let name: string = ticker;
