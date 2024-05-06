@@ -1,5 +1,5 @@
 import environment from "./environment";
-import { interval } from "rxjs";
+import { interval, retry } from "rxjs";
 import secApi from "./feature/secApi/secApi";
 import datastoreGenerator, { Store } from "./feature/datastore/datastore";
 import list from "./ticker-list";
@@ -19,6 +19,7 @@ const compareSubmission = (submission: Submission, store: Store, cik: number) =>
 };
 
 const handleError = (error: any) => {
+    console.log(error);
     sendMessage(environment.healthCheckWebhook, [], error, []).subscribe({error: (err:any) => { console.log(error)}});
 };
 
@@ -27,7 +28,7 @@ const fetchSubmissions = (cik: number, store: Store) => {
         next: (submission: Submission) => compareSubmission(submission, store, cik),
         error: handleError
     };
-    secApi.getSubmissions(cik).subscribe(observer);
+    secApi.getSubmissions(cik).pipe(retry(3)).subscribe(observer);
 };
 
 const checkUpdates = (store: Store) => {
