@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import environment from "../../environment";
 import defaultTickerList from "./defaultTickerList";
-import axiosWrapper from "./../../core/api/axiosWrapper";
+import { MGClient } from "moongoose-client";
 import { Submission } from "./model";
 
 const headers = {
@@ -35,7 +35,7 @@ const findCikByTicker = (tickerToSearch: string): number | null => {
 const getSubmissions = (cik: number): Observable<Submission> => {
     const newCik = leftFillZeroes(cik.toString(), 10);
     const url = "https://data.sec.gov/submissions/CIK" + newCik + ".json"
-    return axiosWrapper.get(url, headers)
+    return MGClient.get(url, headers)
 }
 
 const leftFillZeroes = (input: string, length: number): string => {

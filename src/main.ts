@@ -7,8 +7,14 @@ import discordSecMesssager from "./feature/webhook/discordSecMessager";
 import sendMessage from './feature/webhook/discordIntegration';
 import app from "./express";
 import { Submission } from "./feature/secApi/model";
+import { MGClient } from "moongoose-client";
 
 app; //Necessary
+
+MGClient.initialize({
+    callsResetAfterMilliseconds: environment.serviceCallsResetInMilliseconds,
+    maxCalls: environment.maxServiceCallsInARow
+});
 
 sendMessage(environment.healthCheckWebhook, [], "edgar-watcher starting up", []).subscribe()
 const compareSubmission = (submission: Submission, store: Store, cik: number) => {
@@ -20,7 +26,7 @@ const compareSubmission = (submission: Submission, store: Store, cik: number) =>
 
 const handleError = (error: any) => {
     console.log(error);
-    sendMessage(environment.healthCheckWebhook, [], error, []).subscribe({error: (err:any) => { console.log(error)}});
+    sendMessage(environment.healthCheckWebhook, [], error, []).subscribe({ error: (err: any) => { console.log(error) } });
 };
 
 const fetchSubmissions = (cik: number, store: Store) => {
