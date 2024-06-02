@@ -4,10 +4,10 @@ import secApi from "./feature/secApi/secApi";
 import datastoreGenerator, { Store } from "./feature/datastore/datastore";
 import list from "./ticker-list";
 import discordSecMesssager from "./feature/webhook/discordSecMessager";
-import sendMessage from './feature/webhook/discordIntegration';
 import app from "./express";
 import { Submission } from "./feature/secApi/model";
 import { MGClient } from "moongoose-client";
+import { DClient } from "discord-client";
 
 app; //Necessary
 
@@ -16,7 +16,10 @@ MGClient.initialize({
     maxCalls: environment.maxServiceCallsInARow
 });
 
-sendMessage(environment.healthCheckWebhook, [], "edgar-watcher starting up", []).subscribe()
+
+DClient.initialize(environment.healthCheckWebhook, environment.discordWebhook);
+DClient.healthPost("edgar-watcher starting up").subscribe(res => console.log(res), err => console.log("error"));
+
 const compareSubmission = (submission: Submission, store: Store, cik: number) => {
     if (!store.compare(submission)) {
         discordSecMesssager.postForm(submission, cik);
@@ -26,7 +29,7 @@ const compareSubmission = (submission: Submission, store: Store, cik: number) =>
 
 const handleError = (error: any) => {
     console.log(error);
-    sendMessage(environment.healthCheckWebhook, [], error, []).subscribe({ error: (err: any) => { console.log(error) } });
+    DClient.healthPost(error).subscribe({ error: (err: any) => { console.log(error) } });
 };
 
 const fetchSubmissions = (cik: number, store: Store) => {
