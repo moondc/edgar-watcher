@@ -1,4 +1,4 @@
 // const list = ["AGNC", "STAG", "GLAD", "AMC", "GME", "SCM", "T"];
-const list = ["AMC"];
+const list = ["AMC", "GME"];
 export default list
 
