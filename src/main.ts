@@ -7,6 +7,18 @@ import discordSecMesssager from "./feature/webhook/discordSecMessager";
 import { Submission } from "./feature/secApi/model";
 import { MGClient } from "moongoose-client";
 import { DClient } from "discord-client";
+import express, { Request, Response } from "express";
+
+const app = express();
+app.get('/healthcheck', (req: Request, res: Response) => {
+    const status = { status: "up" }
+    res.json(status);
+    res.send();
+});
+
+app.listen(environment.port, () => {
+    console.log(`Server is running on http://localhost:${environment.port}`);
+});
 
 
 MGClient.initialize({
